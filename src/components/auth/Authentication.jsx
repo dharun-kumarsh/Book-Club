@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import loginImg from '/login.jpeg';
 import signupImg from '/signup.jpeg';
@@ -10,6 +11,7 @@ function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate(); // Use navigate for redirection
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -38,6 +40,8 @@ function Login() {
     }
 
     toast.success("Login Successful 🎉");
+
+    setTimeout(() => navigate('/dashboard'), 1500);
   };
 
   return (
@@ -98,42 +102,6 @@ function Login() {
               <p className="text-md mt-4">
                 Don't have an account?
                 <span className="text-red-600 cursor-pointer ml-1" onClick={() => setIsSignUp(true)}>Sign Up</span>
-              </p>
-            </div>
-
-            {/* Sign Up Form */}
-            <div className="w-full flex-shrink-0 p-8 flex flex-col justify-center items-center">
-              <h2 className="text-3xl font-bold text-gray-800 mb-6">Create Account</h2>
-              <p className="text-gray-600 text-center mb-6">Join us today!</p>
-              <form className="w-full">
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-medium">Name</label>
-                  <input type="text" placeholder="Enter your name" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-medium">Username</label>
-                  <input type="text" placeholder="Enter your register number" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-                </div>
-
-                <div className="mb-6 relative">
-                  <label className="block text-gray-700 font-medium">Password</label>
-                  <div className="relative w-full">
-                    <input type={showPassword ? "text" : "password"} placeholder="Enter your mobile number" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-12" />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-4 flex items-center text-gray-600 hover:text-gray-800"
-                    >
-                      {showPassword ? "👁️" : "🙈"}
-                    </button>
-                  </div>
-                </div>
-
-                <Button className="w-full mt-4 bg-primary text-white py-2 rounded-lg hover:bg-green-800">Sign Up</Button>
-              </form>
-              <p className="text-md mt-4">
-                Already have an account?
-                <span className="text-red-600 cursor-pointer ml-1" onClick={() => setIsSignUp(false)}>Sign In</span>
               </p>
             </div>
 
