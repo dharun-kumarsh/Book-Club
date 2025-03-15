@@ -84,7 +84,7 @@ function Login() {
             <div>
               <label className="block text-gray-700 font-medium">Register Number</label>
               <input
-                type="text"
+                type="tel"
                 placeholder="Enter your Register Number"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -96,7 +96,7 @@ function Login() {
               <label className="block text-gray-700 font-medium">Password</label>
               <div className="relative w-full">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? "tel" : "password"}
                   placeholder="Enter your mobile number"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
