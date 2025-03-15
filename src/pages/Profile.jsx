@@ -103,7 +103,7 @@ function Profile() {
               src={profile.profilePic || "/default-avatar.png"}
               alt="Profile"
               className="w-32 h-32 object-cover rounded-full border-4 border-gray-300 shadow-md transition-transform duration-500 hover:scale-110 cursor-pointer"
-              onClick={() => document.getElementById("file-upload").click()} // Clicking image opens file input
+              onClick={() => document.getElementById("file-upload").click()}
             />
           </div>
 

@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState("");
   const [registerNumber, setRegisterNumber] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -38,7 +39,7 @@ function AuthPage() {
   const handleAuth = (e) => {
     e.preventDefault();
 
-    if (!registerNumber || !password) {
+    if ((!isLogin && !name) || !registerNumber || !password) {
       toast.error("⚠️ Please enter all fields!");
       return;
     }
@@ -61,9 +62,9 @@ function AuthPage() {
     if (!isLogin) {
       localStorage.setItem(
         "registeredUser",
-        JSON.stringify({ registerNumber, password })
+        JSON.stringify({ name, registerNumber, password })
       );
-      toast.success("✅ Signup Successful! Please login 🎉");
+      toast.success("✅ Signup Successful! 🎉");
       setIsLogin(true);
       return;
     }
@@ -75,7 +76,7 @@ function AuthPage() {
       return;
     }
 
-    toast.success("✅ Login Successful 🎉");
+    toast.success(`✅ Welcome back, ${storedUser.name}! 🎉`);
     setTimeout(() => {
       localStorage.setItem("auth", "true");
       navigate("/dashboard");
@@ -123,6 +124,21 @@ function AuthPage() {
               </p>
 
               <form className="w-full space-y-4" onSubmit={handleAuth}>
+                
+                {/* Name Field - Only for Signup */}
+                {!isLogin && (
+                  <div>
+                    <label className="block text-gray-700 font-medium">Name</label>
+                    <input
+                      type="text"
+                      placeholder="Enter your name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-gray-700 font-medium">Register Number</label>
                   <input
