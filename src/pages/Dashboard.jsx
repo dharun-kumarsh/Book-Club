@@ -14,35 +14,57 @@ const books = [
 ];
 
 function Dashboard() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("darkMode") === "true";
+  });
+
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => {
+      localStorage.setItem("darkMode", !prev);
+      return !prev;
+    });
+  };
+
   const location = useLocation();
 
   return (
-    <div className={`flex min-h-screen transition-all duration-500 ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
-      
-      <aside className={`w-72 h-screen fixed top-0 left-0 p-6 flex flex-col justify-between shadow-lg transition-all duration-500 ${darkMode ? "bg-gray-800" : "bg-white"}`}>
+    <div
+      className={`flex min-h-screen transition-colors duration-500 ${
+        darkMode ? "bg-[#1a1a2e] text-white" : "bg-gray-100 text-gray-900"
+      }`}
+    >
+      {/* Sidebar */}
+      <aside
+        className={`w-72 h-screen fixed top-0 left-0 p-6 flex flex-col justify-between shadow-lg transition-all duration-500 ${
+          darkMode ? "bg-[#16213e]" : "bg-white"
+        }`}
+      >
         <div>
           <h1 className="text-2xl font-bold mb-10 flex items-center justify-center space-x-2">
             📖 <span>E-Book Hub</span>
           </h1>
           <nav className="space-y-3">
-            <SidebarItem to="/dashboard" icon={<FiHome />} text="Home" />
-            <SidebarItem to="/dashboard/about" icon={<FiInfo />} text="About" />
-            <SidebarItem to="/dashboard/downloads" icon={<FiDownload />} text="Downloads" />
-            <SidebarItem to="/dashboard/upload" icon={<FiUpload />} text="Uploads" />
-            <SidebarItem to="/dashboard/profile" icon={<FiUser />} text="Profile" />
+            <SidebarItem to="/dashboard" icon={<FiHome />} text="Home" darkMode={darkMode} />
+            <SidebarItem to="/dashboard/about" icon={<FiInfo />} text="About" darkMode={darkMode} />
+            <SidebarItem to="/dashboard/downloads" icon={<FiDownload />} text="Downloads" darkMode={darkMode} />
+            <SidebarItem to="/dashboard/upload" icon={<FiUpload />} text="Uploads" darkMode={darkMode} />
+            <SidebarItem to="/dashboard/profile" icon={<FiUser />} text="Profile" darkMode={darkMode} />
           </nav>
         </div>
 
+        {/* Dark Mode Toggle */}
         <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="flex items-center space-x-3 p-3 rounded-lg text-white bg-primary hover:bg-primary transition-all"
+          onClick={toggleDarkMode}
+          className={`flex items-center space-x-3 p-3 rounded-lg transition-all ${
+            darkMode ? "bg-yellow-400 text-gray-900 hover:bg-yellow-300" : "bg-gray-900 text-white hover:bg-gray-700"
+          }`}
         >
           {darkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
           <span>{darkMode ? "Light Mode" : "Dark Mode"}</span>
         </button>
       </aside>
 
+      {/* Main Content */}
       <main className="flex-1 ml-72 p-8 transition-all">
         <AnimatePresence mode="wait">
           <motion.div
@@ -54,8 +76,8 @@ function Dashboard() {
           >
             {location.pathname === "/dashboard" ? (
               <>
-                <BookSection title="📌 Recommended Books" books={books.slice(0, 4)} />
-                <BookSection title="🔥 Trending Books" books={books.slice(3, 7)} autoScroll />
+                <BookSection title="📌 Recommended Books" books={books.slice(0, 4)} darkMode={darkMode} />
+                <BookSection title="🔥 Trending Books" books={books.slice(3, 7)} darkMode={darkMode} autoScroll />
               </>
             ) : (
               <Outlet />
@@ -67,13 +89,19 @@ function Dashboard() {
   );
 }
 
-const SidebarItem = ({ to, icon, text }) => (
+const SidebarItem = ({ to, icon, text, darkMode }) => (
   <NavLink
     to={to}
     end={to === "/dashboard"} 
     className={({ isActive }) =>
       `relative flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
-        isActive ? "bg-primary text-white" : "hover:bg-primary hover:text-white"
+        isActive
+          ? darkMode
+            ? "bg-yellow-500 text-gray-900"
+            : "bg-primary text-white"
+          : darkMode
+          ? "hover:bg-gray-700"
+          : "hover:bg-primary hover:text-white"
       }`
     }
   >
@@ -82,7 +110,7 @@ const SidebarItem = ({ to, icon, text }) => (
   </NavLink>
 );
 
-const BookSection = ({ title, books, autoScroll }) => {
+const BookSection = ({ title, books, autoScroll, darkMode }) => {
   const [scrollX, setScrollX] = useState(0);
 
   useEffect(() => {
@@ -104,10 +132,16 @@ const BookSection = ({ title, books, autoScroll }) => {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="w-48 select-none bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg cursor-pointer"
+            className={`w-48 select-none p-4 rounded-lg shadow-lg cursor-pointer transition-all ${
+              darkMode ? "bg-[#111827] text-white" : "bg-white text-gray-900"
+            }`}
             style={autoScroll ? { transform: `translateX(${scrollX}px)`, transition: "transform 0.8s ease-in-out" } : {}}
           >
-            <img src={book.img} alt={book.title} className="w-full hover:scale-105 transition-all object-cover rounded-lg" />
+            <img
+              src={book.img}
+              alt={book.title}
+              className="w-full hover:scale-105 transition-all object-cover rounded-lg"
+            />
             <h3 className="mt-3 text-lg font-semibold">{book.title}</h3>
             <p className="text-gray-500">{book.author}</p>
           </motion.div>

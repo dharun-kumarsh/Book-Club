@@ -76,7 +76,7 @@ function AuthPage() {
       return;
     }
 
-    toast.success(`✅ Welcome back, ${storedUser.name}! 🎉`);
+    toast.success(`✅ Welcome back, ${storedUser.name}!`);
     setTimeout(() => {
       localStorage.setItem("auth", "true");
       navigate("/dashboard");
