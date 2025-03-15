@@ -9,12 +9,9 @@ import Profile from './pages/Profile.jsx'
 function App() {
   return (
     <Routes>
-      {/* Public Route */}
       <Route path="/" element={<Login />} />
-
-      {/* Dashboard with Nested Routes */}
       <Route path="/dashboard" element={<Dashboard />}>
-        <Route index element={<About />} /> {/* Default page inside Dashboard */}
+        <Route index element={<About />} />
         <Route path="about" element={<About />} />
         <Route path="downloads" element={<Downloads />} />
         <Route path="upload" element={<Upload />} />

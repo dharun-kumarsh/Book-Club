@@ -20,7 +20,6 @@ function Dashboard() {
   return (
     <div className={`flex min-h-screen transition-all duration-500 ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
       
-      {/* Sidebar - Fixed */}
       <aside className={`w-72 h-screen fixed top-0 left-0 p-6 flex flex-col justify-between shadow-lg transition-all duration-500 ${darkMode ? "bg-gray-800" : "bg-white"}`}>
         <div>
           <h1 className="text-2xl font-bold mb-10 flex items-center justify-center space-x-2">
@@ -35,7 +34,6 @@ function Dashboard() {
           </nav>
         </div>
 
-        {/* Dark Mode Toggle */}
         <button
           onClick={() => setDarkMode(!darkMode)}
           className="flex items-center space-x-3 p-3 rounded-lg text-white bg-primary hover:bg-primary transition-all"
@@ -68,11 +66,15 @@ function Dashboard() {
     </div>
   );
 }
+
 const SidebarItem = ({ to, icon, text }) => (
   <NavLink
     to={to}
+    end={to === "/dashboard"} 
     className={({ isActive }) =>
-      `flex items-center relative space-x-3 p-3 rounded-lg transition-all duration-300 ${isActive ? "bg-primary text-white" : "hover:bg-primary hover:text-white"}`
+      `relative flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
+        isActive ? "bg-primary text-white" : "hover:bg-primary hover:text-white"
+      }`
     }
   >
     {icon}
@@ -80,7 +82,6 @@ const SidebarItem = ({ to, icon, text }) => (
   </NavLink>
 );
 
-// Book Section with Auto Scroll
 const BookSection = ({ title, books, autoScroll }) => {
   const [scrollX, setScrollX] = useState(0);
 
