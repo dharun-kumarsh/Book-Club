@@ -11,12 +11,10 @@ function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [registerNumber, setRegisterNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [dob, setDob] = useState("");
   const navigate = useNavigate();
 
-  // Allowed department codes
-  const validDeptCodes = ["103", "104", "105", "106", "114", "205"];
+  const validDeptCodes = ["103", "104", "105", "106", "114", "205", "243"];
 
   const isValidRegisterNumber = (regNo) => {
     if (!/^\d{12}$/.test(regNo)) return false;
@@ -34,49 +32,56 @@ function AuthPage() {
     return true;
   };
 
-  const isValidMobileNumber = (mobNo) => /^\d{10}$/.test(mobNo);
+  const isValidDOB = (dob) => /^\d{2}\/\d{2}\/\d{4}$/.test(dob);
+
+  // Format DOB as "DD/MM/YYYY" automatically
+  const formatDOB = (input) => {
+    let cleanInput = input.replace(/\D/g, ""); // Remove non-numeric characters
+    if (cleanInput.length > 8) cleanInput = cleanInput.slice(0, 8); // Limit to 8 digits
+
+    let formattedDOB = cleanInput;
+    if (cleanInput.length > 2) formattedDOB = cleanInput.slice(0, 2) + "/" + cleanInput.slice(2);
+    if (cleanInput.length > 4) formattedDOB = formattedDOB.slice(0, 5) + "/" + cleanInput.slice(4);
+
+    setDob(formattedDOB);
+  };
 
   const handleAuth = (e) => {
     e.preventDefault();
 
-    if ((!isLogin && !name) || !registerNumber || !password) {
-      toast.error("⚠️ Please enter all fields!");
+    if (!registerNumber || !dob || (!isLogin && !name.trim())) {
+      toast.error("Please enter all fields!", { position: "top-right", autoClose: 1500 });
       return;
     }
 
     if (!isValidRegisterNumber(registerNumber)) {
-      toast.error("❌ Invalid Register Number! Format: 3115YYDXXX (e.g., 311523205015)");
+      toast.error("Invalid Register Number! Format: (e.g., 311523205015)", { position: "top-right", autoClose: 1500 });
       return;
     }
 
-    if (!isValidMobileNumber(password)) {
-      toast.error("🔒 Password must be a 10-digit mobile number!");
-      return;
-    }
-
-    if (registerNumber === password) {
-      toast.error("⚠️ Password cannot be the same as the Register Number!");
+    if (!isValidDOB(dob)) {
+      toast.error("📅 Date of Birth must be in DD/MM/YYYY format!", { position: "top-right", autoClose: 1500 });
       return;
     }
 
     if (!isLogin) {
       localStorage.setItem(
         "registeredUser",
-        JSON.stringify({ name, registerNumber, password })
+        JSON.stringify({ name, registerNumber, dob })
       );
-      toast.success("✅ Signup Successful! 🎉");
+      toast.success("✅ Signup Successful! 🎉", { position: "top-right", autoClose: 1500 });
       setIsLogin(true);
       return;
     }
 
     const storedUser = JSON.parse(localStorage.getItem("registeredUser"));
 
-    if (!storedUser || storedUser.registerNumber !== registerNumber || storedUser.password !== password) {
-      toast.error("❌ Invalid credentials! Please sign up first.");
+    if (!storedUser || storedUser.registerNumber !== registerNumber || storedUser.dob !== dob) {
+      toast.error("❌ Invalid credentials! Please sign up first.", { position: "top-right", autoClose: 1500 });
       return;
     }
 
-    toast.success(`✅ Welcome back, ${storedUser.name}!`);
+    toast.success(`✅ Welcome back,${storedUser.name}!`, { position: "top-right", autoClose: 1500 });
     setTimeout(() => {
       localStorage.setItem("auth", "true");
       navigate("/dashboard");
@@ -86,8 +91,7 @@ function AuthPage() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="relative w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2">
-        
-        {/* Image Section with Animation */}
+
         <AnimatePresence mode="wait">
           <motion.div
             key={isLogin ? "login-img" : "signup-img"}
@@ -105,7 +109,6 @@ function AuthPage() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Form Section with Animation */}
         <div className="w-full p-8 flex flex-col justify-center items-center">
           <AnimatePresence mode="wait">
             <motion.div
@@ -124,17 +127,16 @@ function AuthPage() {
               </p>
 
               <form className="w-full space-y-4" onSubmit={handleAuth}>
-                
-                {/* Name Field - Only for Signup */}
+
                 {!isLogin && (
                   <div>
-                    <label className="block text-gray-700 font-medium">Name</label>
+                    <label className="block text-gray-700 font-medium">Full Name</label>
                     <input
                       type="text"
-                      placeholder="Enter your name"
+                      placeholder="Enter your full name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 hover:shadow-md focus:border-primary cursor-text text-gray-900"
                     />
                   </div>
                 )}
@@ -146,28 +148,20 @@ function AuthPage() {
                     placeholder="Enter your Register Number"
                     value={registerNumber}
                     onChange={(e) => setRegisterNumber(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 hover:shadow-md focus:border-primary cursor-text text-gray-900"
                   />
                 </div>
 
-                <div className="relative">
-                  <label className="block text-gray-700 font-medium">Password</label>
-                  <div className="relative w-full">
-                    <input
-                      type={showPassword ? "tel" : "password"}
-                      placeholder="Enter your mobile number"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-12"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-4 flex items-center text-gray-600 hover:text-gray-800"
-                    >
-                      {showPassword ? "👁️" : "🙈"}
-                    </button>
-                  </div>
+                <div>
+                  <label className="block text-gray-700 font-medium">Date of Birth (DD/MM/YYYY)</label>
+                  <input
+                    type="tel"
+                    placeholder="Enter your DOB (e.g., 12/05/2004)"
+                    value={dob}
+                    onChange={(e) => formatDOB(e.target.value)}
+                    maxLength="10"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 hover:shadow-md focus:border-primary cursor-text text-gray-900"
+                  />
                 </div>
 
                 <Button type="submit" className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary transition-all">
