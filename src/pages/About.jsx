@@ -28,9 +28,7 @@ function About() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate("/dashboard")}
-          className={`mt-6 px-8 py-3 rounded-full font-semibold text-lg shadow-md transition-all ${
-            theme === "dark" ? "bg-blue-500 hover:bg-blue-400" : "bg-blue-600 text-white hover:bg-blue-500"
-          }`}
+          className={`mt-6 px-8 py-3 rounded-full font-semibold text-lg shadow-md transition-all`}
         >
           Start Exploring 🚀
         </motion.button>
