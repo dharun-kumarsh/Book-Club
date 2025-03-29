@@ -175,7 +175,7 @@ const SidebarItem = ({ to, icon: Icon, text, isOpen }) => {
       }
     >
       <Icon className="text-lg" />
-      <span className={`ml-3 transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 hidden"}`}>{text}</span>
+      <span className={`ml-3 transition-all duration-300 font-semibold ${isOpen ? "opacity-100" : "opacity-0 hidden"}`}>{text}</span>
     </NavLink>
   );
 };
