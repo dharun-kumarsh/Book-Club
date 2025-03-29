@@ -1,175 +1,202 @@
+// pages/Dashboard.js
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FiHome, FiInfo, FiDownload, FiUpload, FiUser, FiSearch, FiBookOpen, FiLogOut } from "react-icons/fi";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  FiHome,
+  FiInfo,
+  FiDownload,
+  FiUpload,
+  FiUser,
+  FiLogOut,
+  FiBookOpen,
+  FiSearch,
+} from "react-icons/fi";
+import { NavLink, useNavigate, Outlet, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-const books = [
-  { id: 1, title: "A Game Of Thrones", author: "George RR Martin", img: "/book1.jpeg", category: "Fantasy" },
-  { id: 2, title: "The Colour Of Magic", author: "Terry Pratchett", img: "/book2.jpeg", category: "Fantasy" },
-  { id: 3, title: "The Lord of the Rings", author: "JRR Tolkien", img: "/book3.jpeg", category: "Fantasy" },
-  { id: 4, title: "Jonathan Strange & Mr Norrell", author: "Susanna Clarke", img: "/book4.jpeg", category: "Fantasy" },
-  { id: 5, title: "The Name of the Wind", author: "Patrick Rothfuss", img: "/book5.jpeg", category: "Fantasy" },
-  { id: 6, title: "Carrion Comfort", author: "Dan Simmons", img: "/book6.jpg", category: "Horror" },
-  { id: 7, title: "The Terror", author: "Dan Simmons", img: "/book7.jpg", category: "Horror" },
-  { id: 8, title: "Dracula", author: "Bram Stoker", img: "/book8.jpg", category: "Horror" },
-  { id: 9, title: "Ghost Story", author: "Peter Straub", img: "/book9.jpeg", category: "Horror" },
-  { id: 10, title: "The Strangler", author: "William Landay", img: "/book10.jpeg", category: "Horror" },
-  { id: 11, title: "All the Devils Are Here", author: "Louise Penny", img: "/book11.jpeg", category: "Mystery" },
-  { id: 12, title: "The Beast Must Die", author: "Cecil Day-Lewis", img: "/book12.jpg", category: "Mystery" },
-  { id: 13, title: "Kitty Peck and the Music Hall Murders", author: "Kate Griffin", img: "/book13.jpeg", category: "Mystery" },
-  { id: 14, title: "Sandrine's Case", author: "Thomas H. Cook", img: "/book14.jpg", category: "Mystery" },
-  { id: 15, title: "Sandrine's Case", author: "Thomas H. Cook", img: "/book14.jpg", category: "Mystery" },
-  { id: 16, title: "The House in the Pines", author: "Ana Reyes", img: "/book16.jpeg", category: "Thriller" },
-  { id: 17, title: "The Martian", author: "Andy Weir", img: "/book17.jpeg", category: "Thriller" },
-  { id: 18, title: "Monkey Beach", author: "Eden Robinson", img: "/book18.jpeg", category: "Thriller" },
-];
-
-const groupBooksByCategory = (books) => {
-  return books.reduce((acc, book) => {
-    if (!acc[book.category]) {
-      acc[book.category] = [];
-    }
-    acc[book.category].push(book);
-    return acc;
-  }, {});
-};
-
-const handleBookDisplay = () => {
-
-}
+import { books } from "@/components/booksData";
 
 function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
-  const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [filteredBooks, setFilteredBooks] = useState([]);
 
   const handleLogout = () => {
     localStorage.clear();
     sessionStorage.clear();
-
-    toast.success("Logged out successfully!", { position: "top-right", autoClose: 1000 });
-
-    setTimeout(() => {
-      navigate("/");
-    }, 1500);
+    toast.success("Logged out successfully!", { position: "top-right", autoClose: 1500 });
+    setTimeout(() => navigate("/"), 1500);
   };
 
-  const categorizedBooks = groupBooksByCategory(books);
+  const normalizedQuery = searchQuery.trim().toLowerCase();
 
-  const filteredCategories = Object.keys(categorizedBooks).filter((category) =>
-    category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const booksByGenre = books.reduce((acc, book) => {
+    const genre = book.category.toLowerCase();
+    if (!acc[genre]) acc[genre] = [];
+    acc[genre].push(book);
+    return acc;
+  }, {});
+
+  const recommendedBooks = Object.values(booksByGenre).map((books) => books[0]);
+
+  useEffect(() => {
+    if (normalizedQuery) {
+      const results = books.filter(
+        (book) =>
+          book.title.toLowerCase().includes(normalizedQuery) ||
+          book.category.toLowerCase().includes(normalizedQuery)
+      );
+      setFilteredBooks(results);
+    } else {
+      setFilteredBooks([]);
+    }
+  }, [normalizedQuery, books]);
+
+  useEffect(() => {
+    console.log("Filtered Books:", filteredBooks);
+  }, [filteredBooks]);
+
+  const toSentenceCase = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   return (
-    <div className="flex flex-col min-h-screen transition-colors duration-500">
+    <motion.div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
       <ToastContainer />
 
-      <header className="w-full flex items-center justify-between px-8 py-4 fixed top-0 left-0 right-0 shadow-md z-50 bg-white">
-        <div className="flex items-center space-x-3 text-xl font-bold">
-          <FiBookOpen size={28} />
-          <span>E-Book Hub</span>
-        </div>
-
-        <div className="flex-grow flex justify-center">
-          <div className="relative w-96">
-            <FiSearch className="absolute left-3 top-3 text-gray-500" size={18} />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search genres..."
-              className="w-full p-2 pl-10 rounded-md bg-gray-100 text-gray-900 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center space-x-2 px-4 py-2 rounded-md bg-red-500 text-white font-semibold transition-all hover:bg-red-600"
+      <motion.aside
+        className={`h-screen fixed top-0 left-0 p-6 shadow-lg bg-white dark:bg-gray-800 flex flex-col transition-all duration-300 ${
+          isSidebarOpen ? "w-64" : "w-20"
+        }`}
+      >
+        <motion.div
+          className="text-3xl font-bold mb-6 flex items-center cursor-pointer"
+          onClick={() => setIsSidebarOpen((prev) => !prev)}
         >
-          <FiLogOut size={18} />
-          <span>Logout</span>
-        </button>
-      </header>
+          <FiBookOpen className="text-gray-600 dark:text-white" />
+          <span className={`ml-3 transition-all duration-300 ${isSidebarOpen ? "opacity-100" : "opacity-0 hidden"}`}>
+            Book Arena
+          </span>
+        </motion.div>
 
-      <div className="flex pt-16">
-        <aside className="w-72 h-screen fixed top-16 left-0 p-6 flex flex-col shadow-lg bg-white">
-          <nav className="space-y-3">
-            <SidebarItem to="/dashboard" icon={<FiHome />} text="Home" />
-            <SidebarItem to="/dashboard/about" icon={<FiInfo />} text="About" />
-            <SidebarItem to="/dashboard/downloads" icon={<FiDownload />} text="Downloads" />
-            <SidebarItem to="/dashboard/upload" icon={<FiUpload />} text="Uploads" />
-            <SidebarItem to="/dashboard/profile" icon={<FiUser />} text="Profile" />
-          </nav>
-        </aside>
+        <nav className="space-y-4">
+          <SidebarItem to="/dashboard" icon={FiHome} text="Home" isOpen={isSidebarOpen} />
+          <SidebarItem to="/dashboard/about" icon={FiInfo} text="About" isOpen={isSidebarOpen} />
+          <SidebarItem to="/dashboard/downloads" icon={FiDownload} text="Downloads" isOpen={isSidebarOpen} />
+          <SidebarItem to="/dashboard/upload" icon={FiUpload} text="Uploads" isOpen={isSidebarOpen} />
+          <SidebarItem to="/dashboard/profile" icon={FiUser} text="Profile" isOpen={isSidebarOpen} />
+        </nav>
 
-        <main className="flex-1 ml-72 p-8 transition-all">
-          <AnimatePresence mode="wait">
-            <motion.div key={location.pathname} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-              {location.pathname === "/dashboard" ? (
+        <motion.button
+          onClick={handleLogout}
+          className="mt-auto flex items-center p-3 rounded-lg transition-all bg-red-500 text-white hover:bg-red-600"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FiLogOut />
+          {isSidebarOpen && <span className="ml-3">Logout</span>}
+        </motion.button>
+      </motion.aside>
+
+      <motion.div
+        className="flex-1 p-10 transition-all duration-300"
+        style={{ marginLeft: isSidebarOpen ? "16rem" : "5rem" }}
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+      >
+        {location.pathname === "/dashboard" && (
+          <>
+            <motion.div className="w-full flex justify-center mb-10">
+              <div className="relative w-full max-w-xl">
+                <FiSearch className="absolute left-4 top-3 text-gray-500" size={20} />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by Title or Genre..."
+                  className="w-full p-3 pl-12 rounded-lg bg-white shadow-sm text-gray-800"
+                />
+              </div>
+            </motion.div>
+
+            {normalizedQuery ? (
+              filteredBooks.length > 0 ? (
                 <>
-                  {filteredCategories.length > 0 ? (
-                    filteredCategories.map((category) => (
-                      <BookSection key={category} title={category} books={categorizedBooks[category]} />
-                    ))
-                  ) : (
-                    <p className="text-gray-500 text-lg">No books found for the given genre.</p>
-                  )}
+                  <h2 className="text-2xl font-bold mb-4">🔍 Search Results</h2>
+                  <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {filteredBooks.map((book) => (
+                      <BookCard key={book.id} book={book} />
+                    ))}
+                  </motion.div>
                 </>
               ) : (
-                <Outlet />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </main>
-      </div>
-    </div>
+                <p className="text-center text-gray-500">No books found.</p>
+              )
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold mb-4">📚 Recommended Books</h2>
+                <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+                  {recommendedBooks.map((book) => (
+                    <BookCard key={book.id} book={book} />
+                  ))}
+                </motion.div>
+
+                {Object.entries(booksByGenre).map(([genre, books]) => (
+                  <div key={genre} className="mb-10">
+                    <h2 className="text-2xl font-bold mb-4">{toSentenceCase(genre)}</h2>
+                    <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      {books.map((book) => (
+                        <BookCard key={book.id} book={book} />
+                      ))}
+                    </motion.div>
+                  </div>
+                ))}
+              </>
+            )}
+          </>
+        )}
+        <Outlet />
+      </motion.div>
+    </motion.div>
   );
 }
 
-const SidebarItem = ({ to, icon, text }) => (
-  <NavLink
-    to={to}
-    end={to === "/dashboard"}
-    className={({ isActive }) =>
-      `relative flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${isActive ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"
-      }`
-    }
-  >
-    {icon}
-    <span>{text}</span>
-  </NavLink>
-);
-
-const BookSection = ({ title, books }) => {
+const SidebarItem = ({ to, icon: Icon, text, isOpen }) => {
   return (
-    <div className="mb-8">
-      <h2 className="text-2xl font-bold mb-4">{title}</h2>
-      <motion.div className="flex space-x-4 overflow-auto w-full">
-        {books.map((book, index) => (
-          <motion.div
-            onClick={handleBookDisplay}
-            key={book.id}
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            whileHover={{ cursor: "pointer" }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="w-48 select-none p-4 rounded-lg shadow-lg cursor-pointer transition-all bg-white text-gray-900"
-          >
-            <img
-              src={book.img}
-              alt={book.title}
-              className="w-40 h-56 object-cover rounded-lg transition-transform duration-300 hover:scale-105"
-            />
-            <h3 className="mt-3 text-lg font-semibold">{book.title}</h3>
-            <p className="text-gray-500">{book.author}</p>
-          </motion.div>
-        ))}
-      </motion.div>
-    </div>
+    <NavLink
+      to={to}
+      end
+      className={({ isActive }) =>
+        `flex items-center p-3 rounded-lg transition-all ${
+          isActive ? "bg-primary text-white font-semibold" : "text-gray-700 hover:bg-gray-200"
+        }`
+      }
+    >
+      <Icon className="text-lg" />
+      <span className={`ml-3 transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 hidden"}`}>{text}</span>
+    </NavLink>
   );
 };
 
+const BookCard = ({ book }) => {
+  const navigate = useNavigate();
+
+  const handleBookClick = () => {
+    navigate(`/dashboard/book/${book.id}`);
+  };
+
+  return (
+    <motion.div
+      className="bg-white shadow-md p-4 rounded-lg flex flex-col cursor-pointer hover:shadow-xl"
+      whileHover={{ scale: 1.05 }}
+      onClick={handleBookClick}
+    >
+      <img src={book.img} alt={book.title} className="w-full h-64 object-cover rounded-md" />
+      <h3 className="mt-2 text-lg font-semibold">{book.title}</h3>
+      <p className="text-gray-500">{book.author}</p>
+    </motion.div>
+  );
+}
 export default Dashboard;

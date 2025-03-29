@@ -1,15 +1,13 @@
 import React, { useContext } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ThemeContext } from "../ThemeContext";
 
 function About() {
   const navigate = useNavigate();
-  const { theme } = useContext(ThemeContext);
 
   return (
-    <div className={`${theme === "dark" ? "bg-gray-900 text-white" : "bg-slate-100 text-gray-900"} min-h-screen transition-all duration-500`}>
-      
+    <div className="min-h-screen transition-all duration-500">
+
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -17,10 +15,10 @@ function About() {
         className="flex flex-col items-center text-center py-20 px-6"
       >
         <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-          Welcome to <span className={`${theme === "dark" ? "text-blue-400" : "text-blue-600"}`}>E - Book Hub</span>
+          Welcome to <span>E - Book Hub</span>
         </h1>
-        <p className={`text-lg md:text-xl mt-4 max-w-3xl ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
-          Your ultimate digital library, designed for passionate readers, students, and professionals. 📖✨  
+        <p className="text-lg md:text-xl mt-4 max-w-3xl">
+          Your ultimate digital library, designed for passionate readers, students, and professionals. 📖✨
           Discover thousands of books, enjoy a seamless reading experience, and manage your personal bookshelf effortlessly.
         </p>
 
@@ -28,7 +26,7 @@ function About() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate("/dashboard")}
-          className={`mt-6 px-8 py-3 rounded-full font-semibold text-lg shadow-md transition-all`}
+          className="mt-6 px-8 py-3 rounded-full font-semibold text-lg shadow-md transition-all bg-slate-300"
         >
           Start Exploring 🚀
         </motion.button>
@@ -53,7 +51,7 @@ function About() {
       </motion.div>
 
       {/* Visual Divider */}
-      <div className={`w-full h-1 ${theme === "dark" ? "bg-blue-400" : "bg-blue-600"} opacity-50 my-12`}></div>
+      <div className="w-full h-1 opacity-50 my-12" />
 
       {/* Additional Info Section */}
       <motion.div
@@ -63,12 +61,12 @@ function About() {
         className="text-center px-6 md:px-12 lg:px-24 py-16"
       >
         <h3 className="text-3xl font-bold mb-6">📚 Who is E-Book Hub for?</h3>
-        <p className={`text-lg md:text-xl max-w-4xl mx-auto ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
-          Whether you are a <span className={`${theme === "dark" ? "text-blue-400" : "text-blue-600"} font-semibold`}>Student</span>, a  
-          <span className={`${theme === "dark" ? "text-blue-400" : "text-blue-600"} font-semibold`}>Professional</span>,  
-          or an <span className={`${theme === "dark" ? "text-blue-400" : "text-blue-600"} font-semibold`}>Avid Reader</span>,  
+        <p className="text-lg md:text-xl max-w-4xl mx-auto">
+          Whether you are a <span className="font-semibold">Student</span>, a
+          <span className="font-semibold">Professional</span>,
+          or an <span className="font-semibold">Avid Reader</span>,
           our platform is designed to enhance your reading experience.
-          Customize fonts, switch between themes, and take notes effortlessly.  
+          Customize fonts, switch between themes, and take notes effortlessly.
         </p>
       </motion.div>
 
@@ -76,16 +74,14 @@ function About() {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
         className="flex justify-center pb-16"
       >
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => navigate("/dashboard")}
-          className={`px-8 py-3 rounded-full font-semibold text-lg shadow-md transition-all ${
-            theme === "dark" ? "bg-blue-500 hover:bg-blue-400" : "bg-blue-600 text-white hover:bg-blue-500"
-          }`}
+          className="px-8 py-3 rounded-full font-semibold text-lg shadow-md transition-all bg-slate-300"
         >
           Start Your Reading Journey 🚀
         </motion.button>
@@ -96,18 +92,14 @@ function About() {
 
 // Feature Card Component
 const FeatureCard = ({ icon, title, description }) => {
-  const { theme } = useContext(ThemeContext);
-
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className={`p-6 rounded-lg shadow-md text-center transition-all ${
-        theme === "dark" ? "bg-gray-700 text-white" : "bg-white text-gray-900"
-      }`}
+      className="p-6 rounded-lg border shadow-xl shadow-gray-400 text-center transition-all"
     >
       <div className="text-5xl">{icon}</div>
       <h3 className="font-semibold text-xl mt-4">{title}</h3>
-      <p className={`text-sm mt-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>{description}</p>
+      <p className="text-sm mt-2">{description}</p>
     </motion.div>
   );
 };

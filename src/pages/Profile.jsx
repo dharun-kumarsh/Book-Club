@@ -24,9 +24,9 @@ function Profile() {
   const departmentName = departmentMap[departmentCode] || "Unknown Department";
 
   const formatDOB = (dob) => {
-    if (!dob || dob.length < 8) return "DD/MM/YYYY"; 
+    if (!dob || dob.length < 8) return "DD/MM/YYYY";
 
-    let cleanedDOB = dob.replace(/\D/g, ""); 
+    let cleanedDOB = dob.replace(/\D/g, "");
     return `${cleanedDOB.slice(0, 2)}/${cleanedDOB.slice(2, 4)}/${cleanedDOB.slice(4)}`;
   };
 
@@ -40,7 +40,7 @@ function Profile() {
   const handleLogout = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("registeredUser");
-    toast.success("Logged out successfully! ✅");
+    toast.success("Logged out successfully!✅");
 
     setTimeout(() => {
       navigate("/");
@@ -48,17 +48,17 @@ function Profile() {
   };
 
   return (
-    <div className="flex flex-col items-center p-10 min-h-screen">
-      <div className="p-8 rounded-lg shadow-lg w-full max-w-2xl bg-white dark:bg-gray-800 dark:text-white transition-all">
-       
+    <div className="flex flex-col items-center justify-center p-20 overflow-hidden select-none">
+      <div className="p-8 rounded-lg shadow-2xl shadow-slate-500 border hover:scale-105 w-full max-w-2xl bg-slate-200 transition-all">
+
         <div className="flex flex-col items-center">
-          <h2 className="text-3xl font-semibold mt-4">{profile.name}</h2>
-          <p className="text-lg">{profile.department}</p>
+          <h2 className="text-3xl font-bold mt-4">{profile.name}</h2>
+          <p className="text-lg pt-5 font-medium">{profile.department}</p>
         </div>
 
-       
+
         <div className="mt-6">
-          <h3 className="text-xl font-bold mb-4">Profile Details</h3>
+          <h3 className="text-2xl text-primary font-bold mb-4">Profile Details</h3>
 
           <div className="grid grid-cols-2 gap-4 font-semibold">
             <ProfileField label="Full Name" value={profile.name} />
@@ -67,7 +67,7 @@ function Profile() {
             <ProfileField label="Date of Birth" value={profile.dob} />
           </div>
 
-          
+
           <div className="mt-6 flex justify-center">
             <button
               onClick={handleLogout}
