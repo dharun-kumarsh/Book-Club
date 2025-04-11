@@ -18,7 +18,6 @@ import Uploads from './Upload';
 
 function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const [filteredBooks, setFilteredBooks] = useState([]);
@@ -96,57 +95,21 @@ function Dashboard() {
   };
 
   return (
-    <motion.div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+    <motion.div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 select-none">
       <ToastContainer />
 
-      <motion.aside
-        className={`h-screen fixed top-0 left-0 p-6 shadow-lg bg-white dark:bg-gray-800 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'
-          }`}
-      >
-        <motion.div
-          className="text-3xl font-bold mb-6 flex items-center cursor-pointer"
-          onClick={() => setIsSidebarOpen((prev) => !prev)}
-        >
+      <motion.aside className={`h-screen fixed top-0 left-0 p-6 shadow-lg bg-white dark:bg-gray-800 flex flex-col w-64`}>
+        <motion.div className="text-3xl font-bold mb-6 flex items-center">
           <FiBookOpen className="text-gray-600 dark:text-white" />
-          <span
-            className={`ml-3 transition-all duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'
-              }`}
-          >
-            Book Arena
-          </span>
+          <span className="ml-3">Book Arena</span>
         </motion.div>
 
         <nav className="space-y-4">
-          <SidebarItem
-            to="/dashboard"
-            icon={FiHome}
-            text="Home"
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem
-            to="/dashboard/about"
-            icon={FiInfo}
-            text="About"
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem
-            to="/dashboard/downloads"
-            icon={FiDownload}
-            text="Downloads"
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem
-            to="/dashboard/upload"
-            icon={FiUpload}
-            text="Uploads"
-            isOpen={isSidebarOpen}
-          />
-          <SidebarItem
-            to="/dashboard/profile"
-            icon={FiUser}
-            text="Profile"
-            isOpen={isSidebarOpen}
-          />
+          <SidebarItem to="/dashboard" icon={FiHome} text="Home" />
+          <SidebarItem to="/dashboard/about" icon={FiInfo} text="About" />
+          <SidebarItem to="/dashboard/downloads" icon={FiDownload} text="Downloads" />
+          <SidebarItem to="/dashboard/upload" icon={FiUpload} text="Uploads" />
+          <SidebarItem to="/dashboard/profile" icon={FiUser} text="Profile" />
         </nav>
 
         <motion.button
@@ -156,13 +119,13 @@ function Dashboard() {
           whileTap={{ scale: 0.95 }}
         >
           <FiLogOut />
-          {isSidebarOpen && <span className="ml-3">Logout</span>}
+          <span className="ml-3">Logout</span>
         </motion.button>
       </motion.aside>
 
       <motion.div
         className="flex-1 p-10 transition-all duration-300"
-        style={{ marginLeft: isSidebarOpen ? '16rem' : '5rem' }}
+        style={{ marginLeft: '16rem' }}
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
       >
@@ -228,39 +191,26 @@ function Dashboard() {
             )}
           </>
         )}
-        {location.pathname === '/dashboard/upload' && (
-          <Uploads onUploadSuccess={handleBookUpload} />
-        )}
+        {location.pathname === '/dashboard/upload' && <Uploads onUploadSuccess={handleBookUpload} />}
         <Outlet />
       </motion.div>
     </motion.div>
   );
 }
 
-
-const SidebarItem = ({ to, icon: Icon, text, isOpen }) => {
+const SidebarItem = ({ to, icon: Icon, text }) => {
   return (
     <NavLink
       to={to}
       end
       className={({ isActive }) =>
-        `flex items-center p-3 rounded-lg transition-all ${isActive
-          ? 'bg-primary text-white font-semibold'
-          : 'text-gray-700 hover:bg-gray-200'
+        `flex items-center p-3 rounded-lg transition-all ${
+          isActive ? 'bg-primary text-white font-semibold' : 'text-gray-700 hover:bg-gray-200'
         }`
       }
     >
-      <Icon
-        className={`transition-all duration-300 ${isOpen ? 'text-lg' : 'text-3xl' // Increase icon size when closed
-          } ${isOpen ? '' : 'mr-0'}`}
-      />
-      {isOpen && (
-        <span
-          className={`ml-3 transition-all duration-300 font-semibold`}
-        >
-          {text}
-        </span>
-      )}
+      <Icon className={`text-lg`} />
+      <span className={`ml-3 transition-all duration-300 font-semibold`}>{text}</span>
     </NavLink>
   );
 };

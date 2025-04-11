@@ -141,12 +141,12 @@ export const books = [
     },
     {
      id: 15,
-     title: "Sandrine's Case",
-     author: "Thomas H. Cook",
-     img: "/book14.jpg",
+     title: "One Half Truth",
+     author: "Eva Dolan",
+     img: "/book15.jpg",
      category: "Mystery",
      language: "English",
-     year: "2018",
+     year: "2021",
      description: "A mystery novel about a detective investigating a cold case involving a missing woman.",
     },
     {
