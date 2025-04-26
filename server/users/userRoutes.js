@@ -10,7 +10,12 @@ router.put("/password", authenticate, userController.updatePassword);
 router.delete("/profile", authenticate, userController.deleteAccount);
 
 // Admin routes for user management
-router.get("/", authenticate, authorize("admin"), userController.getAllUsers);
+router.get(
+  "/allUsers",
+  authenticate,
+  authorize("admin"),
+  userController.getAllUsers
+);
 router.get("/:id", authenticate, userController.getUserById);
 router.put("/:id", authenticate, authorize("admin"), userController.updateUser);
 router.delete(
