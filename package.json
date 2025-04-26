@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "cd server && node app.js",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:all": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
