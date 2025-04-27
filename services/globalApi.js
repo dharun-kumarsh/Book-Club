@@ -27,3 +27,27 @@ export const loginData = async (loginCredentials) => {
     throw error;
   }
 };
+
+// API Endpoints for User Management
+
+// GET method for fetching user profile
+export const getProfile = async () => {
+  try {
+    const response = await api.get("/api/users/profile"); // Assuming you want to get the profile of the logged-in user
+    return response.data;
+  } catch (error) {
+    console.error("Error during login:", error);
+    throw error;
+  }
+};
+
+// PUT method for updating user profile
+export const updateProfile = async (userData) => {
+  try {
+    const response = await api.put("/api/users/profile", userData); // Pass userData as the request body
+    return response.data;
+  } catch (error) {
+    console.error("Error during profile update:", error);
+    throw error;
+  }
+};
