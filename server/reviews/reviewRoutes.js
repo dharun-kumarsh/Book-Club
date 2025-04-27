@@ -3,9 +3,9 @@ const router = express.Router();
 const reviewController = require("./reviewController");
 const authMiddleware = require("../middleware/auth");
 
-router.get("/books/:bookId/reviews", reviewController.getBookReviews);
+router.get("/books/:bookId", reviewController.getBookReviews);
 router.post(
-  "/books/:bookId/reviews",
+  "/books/:bookId",
   authMiddleware.authenticate,
   reviewController.createReview
 );
