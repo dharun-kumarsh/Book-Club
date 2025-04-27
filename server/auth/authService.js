@@ -2,14 +2,9 @@ const User = require("../users/userModel");
 const generateToken = require("../utils/generateToken");
 const logger = require("../utils/logger");
 
-exports.loginUser = async (email, password) => {
-  const user = await User.findOne({ where: { email } });
+exports.loginUser = async (email, dateOfBirth) => {
+  const user = await User.findOne({ where: { email, dateOfBirth } });
   if (!user) {
-    throw new Error("Invalid credentials");
-  }
-
-  const isValidPassword = await user.comparePassword(password);
-  if (!isValidPassword) {
     throw new Error("Invalid credentials");
   }
 
@@ -27,17 +22,17 @@ exports.loginUser = async (email, password) => {
   };
 };
 
-exports.registerUser = async (username, email, password, dateOfBirth) => {
+exports.registerUser = async (username, email, dateOfBirth, role = "user") => {
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
-    throw new Error("User already exists");
+    throw new Error("User with this email already exists");
   }
 
   const user = await User.create({
     username,
     email,
-    password,
     dateOfBirth,
+    role,
   });
 
   const token = generateToken(user.id);

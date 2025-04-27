@@ -1,22 +1,21 @@
-const User = require('./userModel');
-const { Op } = require('sequelize');
-const bcrypt = require('bcryptjs');
+const User = require("./userModel");
+const { Op } = require("sequelize");
 
 class UserService {
   async getUserById(userId) {
     const user = await User.findByPk(userId);
     if (!user) {
-      throw { statusCode: 404, message: 'User not found' };
+      throw { statusCode: 404, message: "User not found" };
     }
     return user;
   }
 
   async getUserProfile(userId) {
     const user = await User.findByPk(userId, {
-      attributes: ['id', 'username', 'email', 'role', 'dateOfBirth']
+      attributes: ["id", "username", "email", "role", "dateOfBirth"],
     });
     if (!user) {
-      throw { statusCode: 404, message: 'User not found' };
+      throw { statusCode: 404, message: "User not found" };
     }
     return user;
   }
@@ -24,26 +23,26 @@ class UserService {
   async getAllUsers(query = {}) {
     const { page = 1, limit = 10, role, search } = query;
     const offset = (page - 1) * limit;
-    
+
     const whereClause = {};
-    
+
     if (role) {
       whereClause.role = role;
     }
-    
+
     if (search) {
       whereClause[Op.or] = [
         { username: { [Op.iLike]: `%${search}%` } },
-        { email: { [Op.iLike]: `%${search}%` } }
+        { email: { [Op.iLike]: `%${search}%` } },
       ];
     }
 
     const { count, rows } = await User.findAndCountAll({
       where: whereClause,
-      attributes: ['id', 'username', 'email', 'role', 'dateOfBirth'],
+      attributes: ["id", "username", "email", "role", "dateOfBirth"],
       limit: parseInt(limit),
       offset,
-      order: [['createdAt', 'DESC']],
+      order: [["createdAt", "DESC"]],
     });
 
     return {
@@ -60,29 +59,45 @@ class UserService {
   async updateUser(userId, updateData) {
     const user = await User.findByPk(userId);
     if (!user) {
-      throw { statusCode: 404, message: 'User not found' };
+      throw { statusCode: 404, message: "User not found" };
     }
 
     if (updateData.email && updateData.email !== user.email) {
       const existingUser = await User.findOne({
-        where: { email: updateData.email }
+        where: { email: updateData.email },
       });
       if (existingUser) {
-        throw { statusCode: 409, message: 'Email already in use' };
+        throw { statusCode: 409, message: "Email already in use" };
       }
     }
 
     if (updateData.username && updateData.username !== user.username) {
       const existingUser = await User.findOne({
-        where: { username: updateData.username }
+        where: { username: updateData.username },
       });
       if (existingUser) {
-        throw { statusCode: 409, message: 'Username already taken' };
+        throw { statusCode: 409, message: "Username already taken" };
       }
     }
 
     await user.update(updateData);
     return user;
+  }
+
+  async deleteUser(userId) {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw { statusCode: 404, message: "User not found" };
+    }
+    await user.destroy();
+  }
+
+  async hardDeleteUser(userId) {
+    const user = await User.findByPk(userId, { paranoid: false }); // Include soft-deleted records
+    if (!user) {
+      throw { statusCode: 404, message: "User not found" };
+    }
+    await user.destroy({ force: true }); // Force permanent deletion
   }
 }
 

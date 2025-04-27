@@ -74,23 +74,6 @@ class UserController {
     }
   }
 
-  async updatePassword(req, res, next) {
-    try {
-      const userId = req.user.id;
-      const { oldPassword, newPassword } = req.body;
-
-      await userService.updateUserPassword(userId, oldPassword, newPassword); // Assuming this method exists in userService
-
-      res.status(200).json({
-        success: true,
-        message: "Password updated successfully",
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  // Assuming you have these methods in your userService and want to expose them via the controller
   async updateUser(req, res, next) {
     try {
       const { id } = req.params;
@@ -122,16 +105,6 @@ class UserController {
       const { id } = req.params;
       await userService.hardDeleteUser(id);
       res.status(204).send(); // No content on successful permanent deletion
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async deleteAccount(req, res, next) {
-    try {
-      const userId = req.user.id;
-      await userService.deleteUser(userId); // Or a specific deleteAccount method
-      res.status(204).send(); // No content on successful account deletion
     } catch (error) {
       next(error);
     }

@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-const bcrypt = require("bcryptjs");
 
 const User = sequelize.define(
   "User",
@@ -32,37 +31,18 @@ const User = sequelize.define(
     },
     dateOfBirth: {
       type: DataTypes.DATEONLY,
-      allowNull: true,
+      allowNull: false, // Assuming date of birth is mandatory
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    }
   },
   {
     timestamps: true,
-    hooks: {
-      beforeCreate: async (user) => {
-        if (user.password) {
-          user.password = await bcrypt.hash(user.password, 12);
-        }
-      },
-      beforeUpdate: async (user) => {
-        if (user.changed("password")) {
-          user.password = await bcrypt.hash(user.password, 12);
-        }
-      },
-    },
   }
 );
 
-User.prototype.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
-};
 
 User.prototype.toJSON = function () {
   const values = { ...this.get() };
-  delete values.password;
+  // No password to delete
   return values;
 };
 
