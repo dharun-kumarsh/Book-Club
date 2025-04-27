@@ -1,9 +1,9 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-const bcrypt = require('bcryptjs');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database");
+const bcrypt = require("bcryptjs");
 
 const User = sequelize.define(
-  'User',
+  "User",
   {
     id: {
       type: DataTypes.UUID,
@@ -26,46 +26,18 @@ const User = sequelize.define(
         isEmail: true,
       },
     },
+    role: {
+      type: DataTypes.ENUM("user", "admin"),
+      defaultValue: "user",
+    },
+    dateOfBirth: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        len: [6, 100],
-      },
-    },
-    firstName: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    lastName: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    role: {
-      type: DataTypes.ENUM('user', 'admin'),
-      defaultValue: 'user',
-    },
-    profilePicture: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    bio: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    preferences: {
-      type: DataTypes.JSONB,
-      allowNull: true,
-      defaultValue: {},
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'suspended', 'deleted'),
-      defaultValue: 'active',
-    },
-    lastLogin: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
+    }
   },
   {
     timestamps: true,
@@ -76,7 +48,7 @@ const User = sequelize.define(
         }
       },
       beforeUpdate: async (user) => {
-        if (user.changed('password')) {
+        if (user.changed("password")) {
           user.password = await bcrypt.hash(user.password, 12);
         }
       },
@@ -84,12 +56,10 @@ const User = sequelize.define(
   }
 );
 
-// Instance method to check password
-User.prototype.validatePassword = async function (candidatePassword) {
+User.prototype.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Method to return user data without sensitive information
 User.prototype.toJSON = function () {
   const values = { ...this.get() };
   delete values.password;

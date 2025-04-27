@@ -3,12 +3,13 @@ const { body } = require('express-validator');
 const registerValidationRules = () => [
   body('username').trim().isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
   body('email').isEmail().normalizeEmail().withMessage('Must be a valid email address'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+  body('dateOfBirth').notEmpty().withMessage('Date of birth is required').isISO8601().withMessage('Date of birth must be a valid date (YYYY-MM-DD)'),
 ];
 
 const loginValidationRules = () => [
   body('email').isEmail().normalizeEmail().withMessage('Must be a valid email address'),
-  body('password').notEmpty().withMessage('Password is required')
+  body('dateOfBirth').notEmpty().withMessage('Date of birth is required').isISO8601().withMessage('Date of birth must be a valid date (YYYY-MM-DD)')
 ];
 
 const updateProfileValidationRules = () => [
@@ -16,19 +17,10 @@ const updateProfileValidationRules = () => [
   body('email').optional().isEmail().normalizeEmail().withMessage('Must be a valid email address')
 ];
 
-const forgotPasswordValidationRules = () => [
-  body('email').isEmail().normalizeEmail().withMessage('Must be a valid email address')
-];
-
-const resetPasswordValidationRules = () => [
-  body('token').notEmpty().withMessage('Reset token is required'),
-  body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters long')
-];
 
 module.exports = {
   registerValidationRules,
   loginValidationRules,
   updateProfileValidationRules,
-  forgotPasswordValidationRules,
-  resetPasswordValidationRules
+
 };
