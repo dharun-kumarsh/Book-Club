@@ -6,7 +6,6 @@ const { authenticate, authorize } = require("../middleware/auth");
 // User profile routes
 router.get("/profile", authenticate, userController.getProfile);
 router.put("/profile", authenticate, userController.updateProfile);
-// Removed the /password route
 
 // Admin routes for user management
 router.get(
@@ -15,7 +14,12 @@ router.get(
   authorize("admin"),
   userController.getAllUsers
 );
-router.get("/:id", authenticate, userController.getUserById);
+router.get(
+  "/:id",
+  authenticate,
+  authorize("admin"),
+  userController.getUserById
+);
 router.put("/:id", authenticate, authorize("admin"), userController.updateUser);
 router.delete(
   "/:id",
