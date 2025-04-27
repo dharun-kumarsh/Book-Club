@@ -39,7 +39,15 @@ const limiter = rateLimit({
 app.use("/api/", limiter);
 
 // Request logging
-app.use(morgan("combined", { stream: logger.stream }));
+app.use(
+  morgan("combined", {
+    stream: {
+      write: (message) => {
+        logger.info(message.trim());
+      },
+    },
+  })
+);
 
 // Body parsing
 app.use(express.json({ limit: "10kb" }));
