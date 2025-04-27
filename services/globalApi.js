@@ -206,7 +206,7 @@ export const updateBookPdfById = async (bookId, pdfData) => {
 //GET method for fetching all reviews by book ID (User and Admin)
 export const getAllReviewsByBookId = async (bookId) => {
   try {
-    const response = await api.get(`/api/reviews/${bookId}`); // Assuming you want to get all reviews by book ID
+    const response = await api.get(`/api/reviews/${bookId}/getreviews`); // Assuming you want to get all reviews by book ID
     return response.data;
   } catch (error) {
     console.error("Error during fetching all reviews by book ID:", error);
@@ -217,7 +217,10 @@ export const getAllReviewsByBookId = async (bookId) => {
 //POST method for adding a new review (User and Admin)
 export const addReview = async (bookId, reviewData) => {
   try {
-    const response = await api.post(`/api/reviews/${bookId}`, reviewData); // Pass reviewData as the request body
+    const response = await api.post(
+      `/api/reviews/${bookId}/addreview`,
+      reviewData
+    ); // Pass reviewData as the request body
     return response.data;
   } catch (error) {
     console.error("Error during adding a new review:", error);
@@ -225,6 +228,27 @@ export const addReview = async (bookId, reviewData) => {
   }
 };
 
+//PUT method for updating a review by ID (User and Admin)
+export const updateReviewById = async (reviewId, reviewData) => {
+  try {
+    const response = await api.put(
+      `/api/reviews/${reviewId}/updatereview`,
+      reviewData
+    ); // Pass reviewData as the request body
+    return response.data;
+  } catch (error) {
+    console.error("Error during updating review by ID:", error);
+    throw error;
+  }
+};
 
-
-
+//DELETE method for deleting a review by ID (User and Admin)
+export const deleteReviewById = async (reviewId) => {
+  try {
+    const response = await api.delete(`/api/reviews/${reviewId}/deletereview`); // Assuming you want to delete a review by ID
+    return response.data;
+  } catch (error) {
+    console.error("Error during deleting review by ID:", error);
+    throw error;
+  }
+};
