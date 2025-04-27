@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const User = require("../users/userModel");
-const logger = require("../utils/logger"); // Assuming you have a logger
+const logger = require("../utils/logger");
 
 // Authentication middleware
 const authenticate = asyncHandler(async (req, res, next) => {
@@ -61,5 +61,7 @@ const authorize = (...roles) => {
     next();
   };
 };
-
-module.exports = { authenticate, authorize };
+module.exports = {
+  authenticate,
+  authorize,
+};

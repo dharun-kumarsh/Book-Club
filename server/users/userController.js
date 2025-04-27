@@ -1,3 +1,5 @@
+
+const { validationResult } = require("express-validator");
 const userService = require("./userService");
 const logger = require("../utils/logger");
 
@@ -12,6 +14,7 @@ class UserController {
         data: userProfile,
       });
     } catch (error) {
+      logger.error(`Get profile error: ${error.message}`);
       next(error);
     }
   }
@@ -34,6 +37,7 @@ class UserController {
         data: user,
       });
     } catch (error) {
+      logger.error(`Get user by ID error: ${error.message}`);
       next(error);
     }
   }
@@ -55,12 +59,18 @@ class UserController {
         pagination: result.pagination,
       });
     } catch (error) {
+      logger.error(`Get all users error: ${error.message}`);
       next(error);
     }
   }
 
   async updateProfile(req, res, next) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      
       const userId = req.user.id;
       const updatedUser = await userService.updateUser(userId, req.body);
 
@@ -70,22 +80,28 @@ class UserController {
         message: "Profile updated successfully",
       });
     } catch (error) {
+      logger.error(`Update profile error: ${error.message}`);
       next(error);
     }
   }
 
   async updateUser(req, res, next) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      
       const { id } = req.params;
       const updatedUser = await userService.updateUser(id, req.body);
-      res
-        .status(200)
-        .json({
-          success: true,
-          data: updatedUser,
-          message: "User updated successfully",
-        });
+      
+      res.status(200).json({
+        success: true,
+        data: updatedUser,
+        message: "User updated successfully",
+      });
     } catch (error) {
+      logger.error(`Update user error: ${error.message}`);
       next(error);
     }
   }
@@ -96,6 +112,7 @@ class UserController {
       await userService.deleteUser(id);
       res.status(204).send(); // No content on successful deletion
     } catch (error) {
+      logger.error(`Delete user error: ${error.message}`);
       next(error);
     }
   }
@@ -106,9 +123,11 @@ class UserController {
       await userService.hardDeleteUser(id);
       res.status(204).send(); // No content on successful permanent deletion
     } catch (error) {
+      logger.error(`Hard delete user error: ${error.message}`);
       next(error);
     }
   }
 }
 
+// Important: Make sure to export an instance of the class
 module.exports = new UserController();

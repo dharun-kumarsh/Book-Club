@@ -1,104 +1,178 @@
 const User = require("./userModel");
 const { Op } = require("sequelize");
+const logger = require("../utils/logger");
 
 class UserService {
   async getUserById(userId) {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw { statusCode: 404, message: "User not found" };
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw { statusCode: 404, message: "User not found" };
+      }
+      return user;
+    } catch (error) {
+      logger.error(`Get user by ID error: ${error.message}`);
+      throw error;
     }
-    return user;
   }
 
   async getUserProfile(userId) {
-    const user = await User.findByPk(userId, {
-      attributes: ["id", "username", "email", "role", "dateOfBirth"],
-    });
-    if (!user) {
-      throw { statusCode: 404, message: "User not found" };
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw { statusCode: 404, message: "User not found" };
+      }
+
+      // Return different fields based on role
+      if (user.role === "admin") {
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          dateOfBirth: user.dateOfBirth,
+        };
+      } else {
+        return {
+          id: user.id,
+          name: user.name,
+          registrationNumber: user.registrationNumber,
+          role: user.role,
+          dateOfBirth: user.dateOfBirth,
+        };
+      }
+    } catch (error) {
+      logger.error(`Get user profile error: ${error.message}`);
+      throw error;
     }
-    return user;
   }
 
   async getAllUsers(query = {}) {
-    const { page = 1, limit = 10, role, search } = query;
-    const offset = (page - 1) * limit;
+    try {
+      const { page = 1, limit = 10, role, search } = query;
+      const offset = (page - 1) * limit;
 
-    const whereClause = {};
+      const whereClause = {};
 
-    if (role) {
-      whereClause.role = role;
-    }
+      if (role) {
+        whereClause.role = role;
+      }
 
-    if (search) {
-      whereClause[Op.or] = [
-        { username: { [Op.iLike]: `%${search}%` } },
-        { email: { [Op.iLike]: `%${search}%` } },
-      ];
-    }
+      if (search) {
+        whereClause[Op.or] = [
+          { name: { [Op.iLike]: `%${search}%` } },
+          { email: { [Op.iLike]: `%${search}%` } },
+          { registrationNumber: { [Op.iLike]: `%${search}%` } },
+        ];
+      }
 
-    const { count, rows } = await User.findAndCountAll({
-      where: whereClause,
-      attributes: ["id", "username", "email", "role", "dateOfBirth"],
-      limit: parseInt(limit),
-      offset,
-      order: [["createdAt", "DESC"]],
-    });
-
-    return {
-      users: rows,
-      pagination: {
-        total: count,
-        page: parseInt(page),
+      const { count, rows } = await User.findAndCountAll({
+        where: whereClause,
         limit: parseInt(limit),
-        totalPages: Math.ceil(count / limit),
-      },
-    };
+        offset,
+        order: [["createdAt", "DESC"]],
+      });
+
+      return {
+        users: rows,
+        pagination: {
+          total: count,
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages: Math.ceil(count / limit),
+        },
+      };
+    } catch (error) {
+      logger.error(`Get all users error: ${error.message}`);
+      throw error;
+    }
   }
 
   async updateUser(userId, updateData) {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw { statusCode: 404, message: "User not found" };
-    }
-
-    if (updateData.email && updateData.email !== user.email) {
-      const existingUser = await User.findOne({
-        where: { email: updateData.email },
-      });
-      if (existingUser) {
-        throw { statusCode: 409, message: "Email already in use" };
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw { statusCode: 404, message: "User not found" };
       }
-    }
 
-    if (updateData.username && updateData.username !== user.username) {
-      const existingUser = await User.findOne({
-        where: { username: updateData.username },
-      });
-      if (existingUser) {
-        throw { statusCode: 409, message: "Username already taken" };
+      // Email update validation for admins
+      if (updateData.email && updateData.email !== user.email) {
+        // Only admins can have email
+        if (!updateData.email.endsWith("@msec.edu.in")) {
+          throw {
+            statusCode: 400,
+            message: "Admin email must end with @msec.edu.in",
+          };
+        }
+
+        const existingUser = await User.findOne({
+          where: { email: updateData.email },
+        });
+        if (existingUser) {
+          throw { statusCode: 409, message: "Email already in use" };
+        }
       }
-    }
 
-    await user.update(updateData);
-    return user;
+      // Registration number update validation for users
+      if (
+        updateData.registrationNumber &&
+        updateData.registrationNumber !== user.registrationNumber
+      ) {
+        // Validate format
+        if (!/^3115\d{2}\d{3}\d{3}$/.test(updateData.registrationNumber)) {
+          throw {
+            statusCode: 400,
+            message: "Invalid registration number format",
+          };
+        }
+
+        const existingUser = await User.findOne({
+          where: { registrationNumber: updateData.registrationNumber },
+        });
+        if (existingUser) {
+          throw {
+            statusCode: 409,
+            message: "Registration number already taken",
+          };
+        }
+      }
+
+      await user.update(updateData);
+      return user;
+    } catch (error) {
+      logger.error(`Update user error: ${error.message}`);
+      throw error;
+    }
   }
 
   async deleteUser(userId) {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw { statusCode: 404, message: "User not found" };
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw { statusCode: 404, message: "User not found" };
+      }
+      await user.destroy(); // Soft delete
+      return { message: "User deleted successfully" };
+    } catch (error) {
+      logger.error(`Delete user error: ${error.message}`);
+      throw error;
     }
-    await user.destroy();
   }
 
   async hardDeleteUser(userId) {
-    const user = await User.findByPk(userId, { paranoid: false }); // Include soft-deleted records
-    if (!user) {
-      throw { statusCode: 404, message: "User not found" };
+    try {
+      const user = await User.findByPk(userId, { paranoid: false }); // Include soft-deleted records
+      if (!user) {
+        throw { statusCode: 404, message: "User not found" };
+      }
+      await user.destroy({ force: true }); // Force permanent deletion
+      return { message: "User permanently deleted" };
+    } catch (error) {
+      logger.error(`Hard delete user error: ${error.message}`);
+      throw error;
     }
-    await user.destroy({ force: true }); // Force permanent deletion
   }
 }
 
+// Make sure to export an instance of the class
 module.exports = new UserService();

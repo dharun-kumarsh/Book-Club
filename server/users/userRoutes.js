@@ -2,10 +2,17 @@ const express = require("express");
 const router = express.Router();
 const userController = require("./userController");
 const { authenticate, authorize } = require("../middleware/auth");
+const { updateProfileValidationRules } = require("../middleware/validation");
 
+// Make sure userController is properly imported and all methods exist
 // User profile routes
 router.get("/profile", authenticate, userController.getProfile);
-router.put("/profile", authenticate, userController.updateProfile);
+router.put(
+  "/profile",
+  authenticate,
+  updateProfileValidationRules(),
+  userController.updateProfile
+);
 
 // Admin routes for user management
 router.get(
@@ -20,7 +27,13 @@ router.get(
   authorize("admin"),
   userController.getUserById
 );
-router.put("/:id", authenticate, authorize("admin"), userController.updateUser);
+router.put(
+  "/:id",
+  authenticate,
+  authorize("admin"),
+  updateProfileValidationRules(),
+  userController.updateUser
+);
 router.delete(
   "/:id",
   authenticate,
