@@ -1,9 +1,0 @@
-node_modules/
-*.log
-.DS_Store
-coverage/
-dist/
-build/
-.idea/
-.vscode/
-.env
