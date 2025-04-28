@@ -25,8 +25,8 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import morgan from "morgan";
-import sequelize from "./config/database.js";
-import logger from "./utils/logger.js";
+import sequelize from "./config/database";
+import logger from "./utils/logger";
 
 // Import routes
 import authRoutes from "./auth/authRoutes";
