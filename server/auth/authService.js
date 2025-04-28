@@ -1,7 +1,9 @@
-const User = require("../users/userModel");
-const generateToken = require("../utils/generateToken");
-const logger = require("../utils/logger");
-
+// const User = require("../users/userModel");
+// const generateToken = require("../utils/generateToken");
+// const logger = require("../utils/logger");
+import User from "../users/userModel";
+import generateToken from "../utils/generateToken";
+import logger from "../utils/logger";
 exports.loginUser = async (registrationNumber, dateOfBirth) => {
   const user = await User.findOne({
     where: {
