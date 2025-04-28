@@ -1,6 +1,9 @@
-const { validationResult } = require("express-validator");
-const authService = require("./authService");
-const logger = require("../utils/logger");
+// const { validationResult } = require("express-validator");
+// const authService = require("./authService");
+// const logger = require("../utils/logger");
+import { validationResult } from "express-validator";
+import * as authService from "./authService";
+import logger from "../utils/logger";
 
 exports.login = async (req, res) => {
   try {
