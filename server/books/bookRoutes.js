@@ -6,7 +6,7 @@ const { authorize, authenticate } = require("../middleware/auth");
 const bookController = require("./bookController");
 
 // Public routes
-router.get("/", bookController.getAllBooks);
+router.get("/allbooks", bookController.getAllBooks);
 router.get("/:id", bookController.getBook);
 router.get("/:id/pdf", bookController.getBookPdf);
 
@@ -15,7 +15,7 @@ router.use(authenticate, authorize("admin"));
 
 // Create book with optional PDF upload
 router.post(
-  "/",
+  "/add",
   upload.single("pdf"),
   [
     check("title", "Title is required").not().isEmpty(),
