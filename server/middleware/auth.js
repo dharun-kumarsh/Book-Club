@@ -13,13 +13,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
   ) {
     try {
       token = req.headers.authorization.split(" ")[1];
-      console.log("authenticate - Token:", token); // 1. Log the raw token
-
-      console.log("authenticate - JWT_SECRET:", process.env.JWT_SECRET); // 2. Log the secret
-
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log("authenticate - Decoded:", decoded); // 3. Log the decoded payload
-
       req.user = await User.findByPk(decoded.id);
       if (!req.user) {
         res.status(401);
@@ -33,7 +27,6 @@ const authenticate = asyncHandler(async (req, res, next) => {
       }
       next();
     } catch (error) {
-      console.error("authenticate - Error:", error); // 4. Log the *entire* error object
       logger.error("Authentication error:", error);
       res.status(401);
       if (error.name === "JsonWebTokenError") {
