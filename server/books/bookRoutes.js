@@ -12,7 +12,6 @@ router.get("/:id/pdf", bookController.getBookPdf);
 
 // Protected admin routes
 router.use(authenticate, authorize("admin"));
-
 // Create book with optional PDF upload
 router.post(
   "/add",
@@ -23,6 +22,8 @@ router.post(
     check("category", "Category is required").not().isEmpty(),
     check("description", "Description is required").not().isEmpty(),
   ],
+  authenticate,
+  authorize("admin"),
   bookController.createBook
 );
 
@@ -34,16 +35,34 @@ router.put(
     check("author", "Author is required").not().isEmpty(),
     check("category", "Category is required").not().isEmpty(),
   ],
+  authenticate,
+  authorize("admin"),
   bookController.updateBook
 );
 
 // Delete book
-router.delete("/:id", bookController.deleteBook);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("admin"),
+  bookController.deleteBook
+);
 
 // Upload/update book PDF
-router.put("/:id/pdf", upload.single("pdf"), bookController.uploadBookPdf);
+router.put(
+  "/:id/pdf",
+  authenticate,
+  authorize("admin"),
+  upload.single("pdf"),
+  bookController.uploadBookPdf
+);
 
 // Delete book PDF
-router.delete("/:id/pdf", bookController.deleteBookPdf);
+router.delete(
+  "/:id/pdf",
+  authenticate,
+  authorize("admin"),
+  bookController.deleteBookPdf
+);
 
 module.exports = router;
