@@ -6,4 +6,4 @@ dist/
 build/
 .idea/
 .vscode/
-*.env
+.env
