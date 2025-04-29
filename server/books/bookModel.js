@@ -71,10 +71,10 @@ const Book = sequelize.define(
         isUrl: true,
       },
     },
-    pdfPath: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    // pdfPath: {
+    //   type: DataTypes.STRING,
+    //   allowNull: true,
+    // },
   },
   {
     timestamps: true,
